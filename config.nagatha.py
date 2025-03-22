@@ -1,6 +1,6 @@
 from typing import List
 
-from libqtile import layout, widget, bar, log_utils
+from libqtile import layout, widget, bar, log_utils, hook
 from libqtile.config import Group, Screen, Mouse, Key
 from libqtile.layout.base import Layout
 from libqtile.lazy import lazy
@@ -21,6 +21,17 @@ popover.init(restack=[
     'jetbrains-idea',
 ])
 systemd_logging.init()
+
+@hook.subscribe.startup_once
+def startup():
+    subprocess.Popen(["/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1"])
+    # home dir backup
+    subprocess.Popen(["/usr/bin/vorta"])
+    # screenshot
+    subprocess.Popen(["gtk-launch", "org.flameshot.Flameshot"])
+    # egress firewall
+    subprocess.Popen(["gtk-launch", "opensnitch_ui"])
+
 
 logger = log_utils.logger
 
