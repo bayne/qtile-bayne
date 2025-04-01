@@ -23,6 +23,7 @@ class OutlookChecker(widget.base.ThreadPoolText):
         ("timezone", pytz.timezone('America/Los_Angeles'), "Timezone"),
         ("foreground", "33ff33", "foreground color"),
         ("foreground_active", "ff8888", "foreground color when meeting is active"),
+        ("foreground_not_today", "8CFFF0", "foreground color when meeting is not today"),
     ]
 
     def __init__(self, **config):
@@ -44,7 +45,7 @@ class OutlookChecker(widget.base.ThreadPoolText):
         return pytz.utc.localize(datetime.fromisoformat(date_string)).astimezone(self.timezone)
 
     def _poll(self):
-        now = datetime.now(self.timezone)
+        now: datetime = datetime.now(self.timezone)
 
         if not self.previous_response or self.last_update + timedelta(seconds=self.request_update_interval) < now:
             response = requests.get(self.url)
@@ -55,6 +56,7 @@ class OutlookChecker(widget.base.ThreadPoolText):
 
         events = response.json()['value']
         events = filter(lambda e: e['isReminderOn'] or e['showAs'] == 'busy', events)
+        events = filter(lambda e: not e['subject'].startswith('Canceled:'), events)
         events = sorted(events, key=lambda e: self._show_as_rank(e['showAs']))
         events = filter(lambda e: self._get_datetime(e['start']) > now or now <= self._get_datetime(e['end']), events)
         next_event = min(events, default={}, key=lambda e: e['start'])
@@ -62,13 +64,15 @@ class OutlookChecker(widget.base.ThreadPoolText):
             return "No next event"
 
         subject, start, end = next_event['subject'], next_event['start'], next_event['end']
-        start = self._get_datetime(start)
-        end = self._get_datetime(end)
+        start: datetime = self._get_datetime(start)
+        end: datetime = self._get_datetime(end)
         day = datetime.strftime(start, "%a")
         start_time = datetime.strftime(start, "%-I:%M %p")
         end_time = datetime.strftime(end, "%-I:%M %p")
 
-        if start <= now <= end:
+        if now.day < start.day:
+            self.foreground = self.foreground_not_today
+        elif start <= now <= end:
             self.foreground = self.foreground_active
         else:
             self.foreground = self.foreground_inactive
