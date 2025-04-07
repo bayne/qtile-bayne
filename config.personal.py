@@ -12,6 +12,7 @@ from bayne.rofi import Rofi, RofiScript
 from bayne import systemd_logging
 from bayne.hooks import popover, active_popup
 from bayne.default import get_widget_defaults, get_default_floating, get_default_layouts
+from bayne.widgets.git_mine import GitMineStatus
 
 active_popup.init([
     'opensnitch-ui',
@@ -86,6 +87,7 @@ screens: List[Screen] = [
                 widget.WindowName(),
                 widget.Clock(format="%a %b %d %I:%M:%S %p"),
                 widget.Spacer(),
+                GitMineStatus(),
                 widget.Systray(),
             ],
             size=24,
