@@ -30,6 +30,11 @@ def startup():
     subprocess.Popen(["gtk-launch", "org.flameshot.Flameshot"])
     # egress firewall
     subprocess.Popen(["gtk-launch", "opensnitch_ui"])
+    ## disabling screensaver due to issues with screen not turning back on
+    # disable screensaver
+    subprocess.Popen(["xset", "s", "off"])
+    # disable energy star features (related to screensaver)
+    subprocess.Popen(["xset", "-dpms"])
 
 W1_GROUP = "W1"
 W2_GROUP = "W2"
