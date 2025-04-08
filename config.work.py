@@ -1,7 +1,7 @@
 import subprocess
 from typing import List
 
-from libqtile import layout, widget, hook, bar
+from libqtile import layout, widget, hook, bar, log_utils, qtile
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.layout.base import Layout
 from libqtile.lazy import lazy
@@ -11,6 +11,8 @@ from bayne.default import get_widget_defaults, get_default_floating, get_default
 from bayne.rofi import Rofi, RofiScript
 from bayne.hooks import popover, active_popup
 from bayne.widgets.outlook_checker import OutlookChecker
+
+logger = log_utils.logger
 
 active_popup.init([
     'opensnitch-ui',
@@ -44,6 +46,8 @@ keys.extend(get_default_switch_group_keys(mod, 8))
 keys.extend([
     Key([mod, "control"], "l", lazy.screen.next_group(), desc="next"),
     Key([mod, "control"], "h", lazy.screen.prev_group(), desc="prev"),
+    Key([], "XF86AudioRaiseVolume", lazy.to_screen(0), desc="main screen"),
+    Key([], "XF86AudioLowerVolume", lazy.to_screen(1), desc="off screen"),
 ])
 
 groups.append(Group(
