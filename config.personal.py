@@ -12,6 +12,7 @@ from bayne.rofi import Rofi, RofiScript
 from bayne import systemd_logging
 from bayne.hooks import popover, active_popup
 from bayne.default import get_widget_defaults, get_default_floating, get_default_layouts
+from bayne.widgets.git_mine import GitMineStatus
 
 active_popup.init([
     'opensnitch-ui',
@@ -30,6 +31,11 @@ def startup():
     subprocess.Popen(["gtk-launch", "org.flameshot.Flameshot"])
     # egress firewall
     subprocess.Popen(["gtk-launch", "opensnitch_ui"])
+    ## disabling screensaver due to issues with screen not turning back on
+    # disable screensaver
+    subprocess.Popen(["xset", "s", "off"])
+    # disable energy star features (related to screensaver)
+    subprocess.Popen(["xset", "-dpms"])
 
 W1_GROUP = "W1"
 W2_GROUP = "W2"
@@ -81,6 +87,7 @@ screens: List[Screen] = [
                 widget.WindowName(),
                 widget.Clock(format="%a %b %d %I:%M:%S %p"),
                 widget.Spacer(),
+                GitMineStatus(),
                 widget.Systray(),
             ],
             size=24,
