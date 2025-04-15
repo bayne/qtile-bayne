@@ -16,6 +16,18 @@ class GitMineStatus(widget.base.ThreadPoolText):
         widget.base.ThreadPoolText.__init__(self, "", **config)
         self.add_defaults(GitMineStatus.defaults)
 
+    def _check_1password_processes(self):
+        """Look for 1Password-related processes."""
+        try:
+            result = subprocess.run(['ps', 'aux'], check=True, stdout=subprocess.PIPE)
+            processes = result.stdout.decode().splitlines()
+            onepassword_processes = [proc for proc in processes if '1password' in proc.lower()]
+
+            return bool(onepassword_processes)
+        except subprocess.CalledProcessError as e:
+            logger.error("Error checking processes {}", e.stderr.decode.strip(), e)
+            return False
+
     def _poll(self):
 
         # Define repository status counts
@@ -31,11 +43,14 @@ class GitMineStatus(widget.base.ThreadPoolText):
             if ".git" in dirs:
                 try:
                     repo_dir = root
-                    subprocess.run(
-                        ["git", "-C", repo_dir, "fetch"],
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL
+                    if self._check_1password_processes():
+                        subprocess.run(
+                            ["git", "-C", repo_dir, "fetch"],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL
                         )
+                    else:
+                        logger.warning("Skipping git fetch for 1Password repo")
                     status_output = subprocess.check_output(
                         ["git", "-C", repo_dir, "status", "--porcelain",
                          "--branch"],
