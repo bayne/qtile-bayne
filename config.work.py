@@ -1,15 +1,29 @@
 import subprocess
 from typing import List
 
-from libqtile import layout, widget, hook, bar, log_utils, qtile
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile import bar
+from libqtile import hook
+from libqtile import layout
+from libqtile import log_utils
+from libqtile import widget
+from libqtile.config import Click
+from libqtile.config import Drag
+from libqtile.config import Group
+from libqtile.config import Key
+from libqtile.config import Match
+from libqtile.config import Screen
 from libqtile.layout.base import Layout
 from libqtile.lazy import lazy
+
 from bayne import systemd_logging
-from bayne.default import get_default_keys, get_default_switch_group_keys
-from bayne.default import get_widget_defaults, get_default_floating, get_default_layouts
-from bayne.rofi import Rofi, RofiScript
-from bayne.hooks import popover, active_popup
+from bayne.default import get_default_floating
+from bayne.default import get_default_keys
+from bayne.default import get_default_layouts
+from bayne.default import get_default_rofi
+from bayne.default import get_default_switch_group_keys
+from bayne.default import get_widget_defaults
+from bayne.hooks import active_popup
+from bayne.hooks import popover
 from bayne.widgets.outlook_checker import OutlookChecker
 
 logger = log_utils.logger
@@ -36,7 +50,7 @@ def startup():
 
 mod: str = "mod4"
 
-rofi = Rofi([RofiScript(name="intellij", path="/home/bpayne/Code/mine/dotfile/rofi-scripts/intellij.py")])
+rofi = get_default_rofi()
 
 # https://github.com/qtile/qtile/blob/master/libqtile/backend/x11/xkeysyms.py
 keys: List[Key] = get_default_keys(mod, rofi)

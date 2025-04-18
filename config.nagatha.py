@@ -1,15 +1,26 @@
+import subprocess
 from typing import List
 
-from libqtile import layout, widget, bar, log_utils, hook
-from libqtile.config import Group, Screen, Mouse, Key
+from libqtile import bar
+from libqtile import hook
+from libqtile import layout
+from libqtile import log_utils
+from libqtile import widget
+from libqtile.config import Group
+from libqtile.config import Key
+from libqtile.config import Mouse
+from libqtile.config import Screen
 from libqtile.layout.base import Layout
 from libqtile.lazy import lazy
 
-from bayne.default import get_default_keys, get_default_switch_group_keys, get_default_mouse
-from bayne.default import get_default_floating
 from bayne import systemd_logging
-from bayne.hooks import popover, active_popup
-from bayne.rofi import Rofi, RofiScript
+from bayne.default import get_default_floating
+from bayne.default import get_default_keys
+from bayne.default import get_default_mouse
+from bayne.default import get_default_rofi
+from bayne.default import get_default_switch_group_keys
+from bayne.hooks import active_popup
+from bayne.hooks import popover
 
 BORDER_FOCUS="#CC1111"
 BORDER_NORMAL="#440000"
@@ -35,7 +46,7 @@ def startup():
 
 logger = log_utils.logger
 
-rofi = Rofi([RofiScript(name="intellij", path="/home/bpayne/Code/mine/dotfile/rofi-scripts/intellij.py")])
+rofi = get_default_rofi()
 
 mod = "mod4"
 

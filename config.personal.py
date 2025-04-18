@@ -1,17 +1,30 @@
+import asyncio
 import subprocess
 from typing import List
 
-from libqtile import layout, widget, bar, hook, log_utils, qtile
-from libqtile.config import Group, Screen, Mouse, Key
+from libqtile import bar
+from libqtile import hook
+from libqtile import layout
+from libqtile import log_utils
+from libqtile import qtile
+from libqtile import widget
+from libqtile.config import Group
+from libqtile.config import Key
+from libqtile.config import Mouse
+from libqtile.config import Screen
 from libqtile.layout.base import Layout
 from libqtile.lazy import lazy
-import asyncio
 
-from bayne.default import get_default_keys, get_default_switch_group_keys, get_default_mouse
-from bayne.rofi import Rofi, RofiScript
 from bayne import systemd_logging
-from bayne.hooks import popover, active_popup
-from bayne.default import get_widget_defaults, get_default_floating, get_default_layouts
+from bayne.default import get_default_floating
+from bayne.default import get_default_keys
+from bayne.default import get_default_layouts
+from bayne.default import get_default_mouse
+from bayne.default import get_default_rofi
+from bayne.default import get_default_switch_group_keys
+from bayne.default import get_widget_defaults
+from bayne.hooks import active_popup
+from bayne.hooks import popover
 from bayne.widgets.git_mine import GitMineStatus
 
 active_popup.init([
@@ -59,8 +72,8 @@ async def new_work_virt_viewer(client):
             client.togroup(W2_GROUP)
 
 mod = "mod4"
+rofi = get_default_rofi()
 # https://github.com/qtile/qtile/blob/master/libqtile/backend/x11/xkeysyms.py
-rofi = Rofi([RofiScript(name="intellij", path="/home/bpayne/Code/mine/dotfile/rofi-scripts/intellij.py")])
 keys = get_default_keys(mod, rofi)
 
 groups = [Group(name=i, screen_affinity=0) for i in "123456789"]

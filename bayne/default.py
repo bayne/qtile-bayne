@@ -1,11 +1,27 @@
-from typing import List, Iterable
-
-from libqtile import bar, widget, layout
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
-from libqtile.lazy import lazy
 import os
+from typing import Iterable
+from typing import List
+
+from libqtile import layout
+from libqtile.config import Click
+from libqtile.config import Drag
+from libqtile.config import Key
+from libqtile.config import Match
+from libqtile.lazy import lazy
 
 from bayne.rofi import Rofi
+from bayne.rofi import RofiScript
+
+
+def get_default_rofi():
+    return Rofi(
+        [
+            RofiScript(
+                name="intellij",
+                path="/home/bpayne/Code/mine/dotfile/rofi-scripts/jetbrains.py"
+            )
+        ]
+    )
 
 def get_default_keys(mod: str, rofi: Rofi = None) -> List[Key]:
     env = os.environ.copy()
