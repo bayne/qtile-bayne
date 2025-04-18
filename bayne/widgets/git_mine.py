@@ -41,7 +41,6 @@ class GitMineStatus(widget.base.ThreadPoolText):
 
         for item in os.listdir(base_dir):
             item_path = os.path.join(base_dir, item)
-            logger.info(f"Checking {item_path}")
             if not os.path.isdir(item_path):
                 continue
             if ".git" in os.listdir(item_path):
