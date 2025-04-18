@@ -39,10 +39,14 @@ class GitMineStatus(widget.base.ThreadPoolText):
 
         base_dir = os.path.expanduser("~/Code/mine")
 
-        for root, dirs, files in os.walk(base_dir):
-            if ".git" in dirs:
+        for item in os.listdir(base_dir):
+            item_path = os.path.join(base_dir, item)
+            logger.info(f"Checking {item_path}")
+            if not os.path.isdir(item_path):
+                continue
+            if ".git" in os.listdir(item_path):
                 try:
-                    repo_dir = root
+                    repo_dir = item_path
                     if self._check_1password_processes():
                         subprocess.run(
                             ["git", "-C", repo_dir, "fetch"],
