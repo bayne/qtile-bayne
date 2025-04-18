@@ -61,7 +61,9 @@ logger = log_utils.logger
 
 @hook.subscribe.client_new
 @hook.subscribe.client_name_updated
-async def new_work_virt_viewer(client):
+async def new_work_viewer(client):
+    if "DeckLink Quad HDMI Recorder" in client.name:
+        client.togroup(W2_GROUP)
     if "remote-viewer" in client.get_wm_class():
         if "work (1)" in client.name:
             client.togroup(W1_GROUP)
@@ -82,7 +84,15 @@ groups.append(Group(name=W2_GROUP, screen_affinity=0))
 keys.extend(get_default_switch_group_keys(mod, 9))
 keys.extend([
     Key(['mod1', "control"], "9", lazy.group[W1_GROUP].toscreen(), desc="W1"),
-    Key(['mod1', "control"], "0", lazy.group[W2_GROUP].toscreen(), desc="W2"),
+    Key(['mod1', "control"], "0",
+        lazy.group[W2_GROUP].toscreen(),
+        lazy.group[W2_GROUP].focus_by_name('work (2)'),
+        desc="W2",
+    ),
+    Key([], 'XF86Search',
+        lazy.group[W2_GROUP].focus_by_name('DeckLink Quad HDMI Recorder (1)'),
+        desc="focus on mbp"
+    ),
     Key([mod, 'control'], 'l',
         lazy.spawn('lock'),
         desc='Lock screen',
