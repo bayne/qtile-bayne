@@ -63,13 +63,14 @@ last_default_group = None
 def change_group(*args):
     global last_default_group
     group_name = qtile.current_screen.group.name
-    if group_name in default_groups:
+    if group_name in default_groups and last_default_group != group_name:
         last_default_group = group_name
 
 @lazy.function
 def toggle_last_default_group(e):
     global last_default_group
-    qtile.screens[0].toggle_group(last_default_group)
+    if last_default_group is not None and qtile.current_screen.group.name != last_default_group:
+        qtile.screens[0].toggle_group(last_default_group)
 
 def get_default_switch_group_keys(mod, count) -> Iterable[Key]:
     global last_default_group
