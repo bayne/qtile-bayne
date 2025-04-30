@@ -34,6 +34,12 @@ def startup():
     subprocess.Popen(["gtk-launch", "opensnitch_ui"])
     subprocess.run(["/usr/bin/systemctl", "--user", "start", "spice-vdagent"])
 
+    ## disabling screensaver due to issues with screen not turning back on
+    # disable screensaver
+    subprocess.Popen(["xset", "s", "off"])
+    # disable energy star features (related to screensaver)
+    subprocess.Popen(["xset", "-dpms"])
+
 mod: str = "mod4"
 
 rofi = Rofi([RofiScript(name="intellij", path="/home/bpayne/Code/mine/dotfile/rofi-scripts/intellij.py")])
