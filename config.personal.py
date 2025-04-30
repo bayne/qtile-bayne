@@ -1,17 +1,30 @@
+import asyncio
 import subprocess
 from typing import List
 
-from libqtile import layout, widget, bar, hook, log_utils, qtile
-from libqtile.config import Group, Screen, Mouse, Key
+from libqtile import bar
+from libqtile import hook
+from libqtile import layout
+from libqtile import log_utils
+from libqtile import qtile
+from libqtile import widget
+from libqtile.config import Group
+from libqtile.config import Key
+from libqtile.config import Mouse
+from libqtile.config import Screen
 from libqtile.layout.base import Layout
 from libqtile.lazy import lazy
-import asyncio
 
-from bayne.default import get_default_keys, get_default_switch_group_keys, get_default_mouse
-from bayne.rofi import Rofi, RofiScript
 from bayne import systemd_logging
-from bayne.hooks import popover, active_popup
-from bayne.default import get_widget_defaults, get_default_floating, get_default_layouts
+from bayne.default import get_default_floating
+from bayne.default import get_default_keys
+from bayne.default import get_default_layouts
+from bayne.default import get_default_mouse
+from bayne.default import get_default_rofi
+from bayne.default import get_default_switch_group_keys
+from bayne.default import get_widget_defaults
+from bayne.hooks import active_popup
+from bayne.hooks import popover
 from bayne.widgets.git_mine import GitMineStatus
 
 active_popup.init([
@@ -31,6 +44,9 @@ def startup():
     subprocess.Popen(["gtk-launch", "org.flameshot.Flameshot"])
     # egress firewall
     subprocess.Popen(["gtk-launch", "opensnitch_ui"])
+
+    subprocess.Popen(["1password", "--silent"])
+
     ## disabling screensaver due to issues with screen not turning back on
     # disable screensaver
     subprocess.Popen(["xset", "s", "off"])
@@ -45,7 +61,9 @@ logger = log_utils.logger
 
 @hook.subscribe.client_new
 @hook.subscribe.client_name_updated
-async def new_work_virt_viewer(client):
+async def new_work_viewer(client):
+    if "DeckLink Quad HDMI Recorder" in client.name:
+        client.togroup(W2_GROUP)
     if "remote-viewer" in client.get_wm_class():
         if "work (1)" in client.name:
             client.togroup(W1_GROUP)
@@ -56,8 +74,8 @@ async def new_work_virt_viewer(client):
             client.togroup(W2_GROUP)
 
 mod = "mod4"
+rofi = get_default_rofi()
 # https://github.com/qtile/qtile/blob/master/libqtile/backend/x11/xkeysyms.py
-rofi = Rofi([RofiScript(name="intellij", path="/home/bpayne/Code/mine/dotfile/rofi-scripts/intellij.py")])
 keys = get_default_keys(mod, rofi)
 
 groups = [Group(name=i, screen_affinity=0) for i in "123456789"]
@@ -66,7 +84,15 @@ groups.append(Group(name=W2_GROUP, screen_affinity=0))
 keys.extend(get_default_switch_group_keys(mod, 9))
 keys.extend([
     Key(['mod1', "control"], "9", lazy.group[W1_GROUP].toscreen(), desc="W1"),
-    Key(['mod1', "control"], "0", lazy.group[W2_GROUP].toscreen(), desc="W2"),
+    Key(['mod1', "control"], "0",
+        lazy.group[W2_GROUP].toscreen(),
+        lazy.group[W2_GROUP].focus_by_name('work (2)'),
+        desc="W2",
+    ),
+    Key([], 'XF86Search',
+        lazy.group[W2_GROUP].focus_by_name('DeckLink Quad HDMI Recorder (1)'),
+        desc="focus on mbp"
+    ),
     Key([mod, 'control'], 'l',
         lazy.spawn('lock'),
         desc='Lock screen',

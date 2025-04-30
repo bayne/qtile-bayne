@@ -1,11 +1,31 @@
-from typing import List, Iterable
-
-from libqtile import bar, widget, layout
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
-from libqtile.lazy import lazy
 import os
+from typing import Iterable
+from typing import List
+
+from libqtile import hook
+from libqtile import layout
+from libqtile import log_utils
+from libqtile import qtile
+from libqtile.config import Click
+from libqtile.config import Drag
+from libqtile.config import Key
+from libqtile.config import Match
+from libqtile.lazy import lazy
 
 from bayne.rofi import Rofi
+from bayne.rofi import RofiScript
+
+logger = log_utils.logger
+
+def get_default_rofi():
+    return Rofi(
+        [
+            RofiScript(
+                name="intellij",
+                path="/home/bpayne/Code/mine/dotfile/rofi-scripts/jetbrains.py"
+            )
+        ]
+    )
 
 def get_default_keys(mod: str, rofi: Rofi = None) -> List[Key]:
     env = os.environ.copy()
@@ -34,8 +54,32 @@ def get_default_keys(mod: str, rofi: Rofi = None) -> List[Key]:
         Key([mod], "r", rofi.show())
     ]
 
+
+
+default_groups = []
+last_default_group = None
+
+@hook.subscribe.setgroup
+def change_group(*args):
+    global last_default_group
+    group_name = qtile.current_screen.group.name
+    if group_name in default_groups and last_default_group != group_name:
+        last_default_group = group_name
+
+@lazy.function
+def toggle_last_default_group(e):
+    global last_default_group
+    if last_default_group is not None and qtile.current_screen.group.name != last_default_group:
+        qtile.screens[0].toggle_group(last_default_group)
+
 def get_default_switch_group_keys(mod, count) -> Iterable[Key]:
-    for i in range(1, count + 1):
+    global last_default_group
+    global default_groups
+    default_groups = range(1, count + 1)
+    default_groups = map(str, default_groups)
+    default_groups = list(default_groups)
+
+    for i in default_groups:
         yield Key(
             [mod],
             str(i),
@@ -48,6 +92,7 @@ def get_default_switch_group_keys(mod, count) -> Iterable[Key]:
             lazy.window.togroup(str(i), switch_group=False),
             desc="Switch to & move focused window to group {}".format(i),
         )
+    yield Key([mod], "grave", toggle_last_default_group, desc="last group")
 
 def get_widget_defaults() -> dict:
     return dict(

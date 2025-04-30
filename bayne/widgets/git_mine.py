@@ -16,6 +16,18 @@ class GitMineStatus(widget.base.ThreadPoolText):
         widget.base.ThreadPoolText.__init__(self, "", **config)
         self.add_defaults(GitMineStatus.defaults)
 
+    def _check_1password_processes(self):
+        """Look for 1Password-related processes."""
+        try:
+            result = subprocess.run(['ps', 'aux'], check=True, stdout=subprocess.PIPE)
+            processes = result.stdout.decode().splitlines()
+            onepassword_processes = [proc for proc in processes if '1password' in proc.lower()]
+
+            return bool(onepassword_processes)
+        except subprocess.CalledProcessError as e:
+            logger.error("Error checking processes {}", e.stderr.decode.strip(), e)
+            return False
+
     def _poll(self):
 
         # Define repository status counts
@@ -27,15 +39,21 @@ class GitMineStatus(widget.base.ThreadPoolText):
 
         base_dir = os.path.expanduser("~/Code/mine")
 
-        for root, dirs, files in os.walk(base_dir):
-            if ".git" in dirs:
+        for item in os.listdir(base_dir):
+            item_path = os.path.join(base_dir, item)
+            if not os.path.isdir(item_path):
+                continue
+            if ".git" in os.listdir(item_path):
                 try:
-                    repo_dir = root
-                    subprocess.run(
-                        ["git", "-C", repo_dir, "fetch"],
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL
+                    repo_dir = item_path
+                    if self._check_1password_processes():
+                        subprocess.run(
+                            ["git", "-C", repo_dir, "fetch"],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL
                         )
+                    else:
+                        logger.warning("Skipping git fetch for 1Password repo")
                     status_output = subprocess.check_output(
                         ["git", "-C", repo_dir, "status", "--porcelain",
                          "--branch"],
