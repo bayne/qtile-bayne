@@ -38,7 +38,6 @@ systemd_logging.init()
 
 @hook.subscribe.startup_once
 def startup():
-    subprocess.run(["/home/bpayne/.screenlayout/default.sh"])
     subprocess.Popen(["/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1"])
     # home dir backup
     subprocess.Popen(["/usr/bin/vorta"])
@@ -47,6 +46,7 @@ def startup():
     # egress firewall
     subprocess.Popen(["gtk-launch", "opensnitch_ui"])
     subprocess.run(["/usr/bin/systemctl", "--user", "start", "spice-vdagent"])
+    subprocess.run(["/home/bpayne/.screenlayout/default.sh"])
 
     ## disabling screensaver due to issues with screen not turning back on
     # disable screensaver
