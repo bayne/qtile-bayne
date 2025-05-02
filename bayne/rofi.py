@@ -17,8 +17,8 @@ class RofiScript:
 class Rofi:
     def __init__(self, rofi_scripts: List[RofiScript]):
         combi_modi = [
-            *map(lambda rofi_script: f"{rofi_script.name}:{rofi_script.path}", rofi_scripts),
             'window',
+            *map(lambda rofi_script: f"{rofi_script.name}:{rofi_script.path}", rofi_scripts),
             'drun',
             'run'
         ]
