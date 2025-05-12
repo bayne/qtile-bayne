@@ -1,11 +1,11 @@
 import sys
 from datetime import datetime, timedelta
 
-from libqtile import widget, log_utils
+from libqtile import widget
+from libqtile.log_utils import logger
 
 import subprocess, requests, pytz
 
-logger = log_utils.logger
 
 def _get_password(entry):
     result = subprocess.run(["pass", entry], capture_output=True, text=True, check=True)
@@ -56,7 +56,7 @@ class OutlookChecker(widget.base.ThreadPoolText):
 
         events = response.json()['value']
         events = filter(lambda e: e['isReminderOn'] or e['showAs'] == 'busy', events)
-        events = filter(lambda e: not e['subject'].startswith('Canceled:'), events)
+        events = filter(lambda e: 'subject' not in e or not e['subject'].startswith('Canceled:'), events)
         events = sorted(events, key=lambda e: self._show_as_rank(e['showAs']))
         events = filter(lambda e: self._get_datetime(e['start']) > now or now <= self._get_datetime(e['end']), events)
         next_event = min(events, default={}, key=lambda e: e['start'])
