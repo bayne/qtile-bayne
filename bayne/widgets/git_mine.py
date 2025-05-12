@@ -25,7 +25,7 @@ class GitMineStatus(widget.base.ThreadPoolText):
 
             return bool(onepassword_processes)
         except subprocess.CalledProcessError as e:
-            logger.error("Error checking processes {}", e.stderr.decode.strip(), e)
+            logger.exception("Error checking processes {}", e.stderr.decode.strip())
             return False
 
     def _poll(self):
@@ -73,9 +73,7 @@ class GitMineStatus(widget.base.ThreadPoolText):
                         else:
                             up_to_date_count += 1
                 except Exception as e:
-                    logger.error(
-                        f"Error processing git repository at {repo_dir}: {e}"
-                    )
+                    logger.exception(f"Error processing git repository at {repo_dir}")
         return (f"<b>(↩️{behind_count})(⬆️{ahead_count})(✖️{conflict_count})("
                 f"✔️{up_to_date_count})(⋮{pending_count})</b>")
 
@@ -83,6 +81,6 @@ class GitMineStatus(widget.base.ThreadPoolText):
         try:
             return self._poll()
         except Exception as e:
-            logger.error("Failed to poll for git status", e)
+            logger.exception("Failed to poll for git status")
             return f"Error something went wrong"
 

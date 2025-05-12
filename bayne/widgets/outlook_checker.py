@@ -63,7 +63,7 @@ class OutlookChecker(widget.base.ThreadPoolText):
         if not next_event:
             return "No next event"
 
-        subject, start, end = next_event['subject'], next_event['start'], next_event['end']
+        subject, start, end = next_event.get('subject', 'unknown'), next_event['start'], next_event['end']
         start: datetime = self._get_datetime(start)
         end: datetime = self._get_datetime(end)
         day = datetime.strftime(start, "%a")
@@ -83,6 +83,6 @@ class OutlookChecker(widget.base.ThreadPoolText):
         try:
             return self._poll()
         except Exception as e:
-            logger.error("Failed to poll for outlook events", e)
+            logger.exception("Failed to poll for outlook events")
             return f"Error something went wrong"
 
