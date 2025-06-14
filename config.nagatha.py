@@ -105,12 +105,6 @@ screens: List[Screen] = [
                 widget.WindowName(),
                 widget.Clock(format="%a %b %d %I:%M:%S %p"),
                 widget.Spacer(),
-                widget.Wttr(
-                    format='%c%C %t(%f) %w %h %p',
-                    location={'Portland': 'Home'},
-                    update_interval=30,
-                    units='u',
-                ),
                 widget.Backlight(
                     background='#551',
                     fmt='☀️{}',
