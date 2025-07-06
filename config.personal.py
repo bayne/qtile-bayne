@@ -62,7 +62,7 @@ logger = log_utils.logger
 @hook.subscribe.client_new
 @hook.subscribe.client_name_updated
 async def new_work_viewer(client):
-    if "DeckLink Quad HDMI Recorder" in client.name:
+    if "DeckLink Quad HDMI Recorder (1)" in client.name:
         client.togroup(W2_GROUP)
     if "remote-viewer" in client.get_wm_class():
         if "work (1)" in client.name:
@@ -94,7 +94,7 @@ keys.extend([
         desc="focus on mbp"
     ),
     Key([mod, 'control'], 'l',
-        lazy.spawn('lock'),
+        lazy.spawn('lock', shell=True),
         desc='Lock screen',
     ),
 ])
@@ -113,7 +113,6 @@ screens: List[Screen] = [
                 widget.WindowName(),
                 widget.Clock(format="%a %b %d %I:%M:%S %p"),
                 widget.Spacer(),
-                GitMineStatus(),
                 widget.Systray(),
             ],
             size=24,
