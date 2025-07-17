@@ -24,6 +24,7 @@ from bayne.default import get_default_switch_group_keys
 from bayne.default import get_widget_defaults
 from bayne.hooks import active_popup
 from bayne.hooks import popover
+from bayne.rofi import Rofi, RofiScript
 from bayne.widgets.outlook_checker import OutlookChecker
 
 logger = log_utils.logger
@@ -56,7 +57,18 @@ def startup():
 
 mod: str = "mod4"
 
-rofi = get_default_rofi()
+rofi = Rofi(
+    [
+        RofiScript(
+            name="intellij",
+            path="/home/bpayne/Code/mine/dotfile/rofi-scripts/jetbrains.py"
+        ),
+        RofiScript(
+            name="bookmark",
+            path="/home/bpayne/Code/mine/dotfile/rofi-scripts/bookmarks.py"
+        )
+    ]
+)
 
 # https://github.com/qtile/qtile/blob/master/libqtile/backend/x11/xkeysyms.py
 keys: List[Key] = get_default_keys(mod, rofi)
