@@ -20,12 +20,13 @@ from bayne.default import get_default_floating
 from bayne.default import get_default_keys
 from bayne.default import get_default_layouts
 from bayne.default import get_default_mouse
-from bayne.default import get_default_rofi
 from bayne.default import get_default_switch_group_keys
 from bayne.default import get_widget_defaults
 from bayne.hooks import active_popup
+from bayne.hooks import disable_screensaver
 from bayne.hooks import popover
-from bayne.widgets.git_mine import GitMineStatus
+from bayne.rofi import Rofi
+from bayne.rofi import RofiScript
 
 active_popup.init([
     'opensnitch-ui',
@@ -34,9 +35,10 @@ popover.init(restack=[
     'jetbrains-idea',
 ])
 systemd_logging.init()
+disable_screensaver.init()
 
 @hook.subscribe.startup_once
-def startup():
+def startup_once():
     subprocess.Popen(["/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1"])
     # home dir backup
     subprocess.Popen(["/usr/bin/vorta"])
@@ -46,12 +48,6 @@ def startup():
     subprocess.Popen(["gtk-launch", "opensnitch_ui"])
 
     subprocess.Popen(["1password", "--silent"])
-
-    ## disabling screensaver due to issues with screen not turning back on
-    # disable screensaver
-    subprocess.Popen(["xset", "s", "off"])
-    # disable energy star features (related to screensaver)
-    subprocess.Popen(["xset", "-dpms"])
 
 W1_GROUP = "W1"
 W2_GROUP = "W2"
@@ -74,7 +70,18 @@ async def new_work_viewer(client):
             client.togroup(W2_GROUP)
 
 mod = "mod4"
-rofi = get_default_rofi()
+rofi = Rofi(
+    [
+        RofiScript(
+            name="intellij",
+            path="/home/bpayne/Code/mine/dotfile/rofi-scripts/jetbrains.py"
+        ),
+        RofiScript(
+            name="bookmark",
+            path="/home/bpayne/Code/mine/dotfile/rofi-scripts/bookmarks.py"
+        )
+    ]
+)
 # https://github.com/qtile/qtile/blob/master/libqtile/backend/x11/xkeysyms.py
 keys = get_default_keys(mod, rofi)
 

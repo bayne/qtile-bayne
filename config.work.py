@@ -19,10 +19,10 @@ from bayne import systemd_logging
 from bayne.default import get_default_floating
 from bayne.default import get_default_keys
 from bayne.default import get_default_layouts
-from bayne.default import get_default_rofi
 from bayne.default import get_default_switch_group_keys
 from bayne.default import get_widget_defaults
 from bayne.hooks import active_popup
+from bayne.hooks import disable_screensaver
 from bayne.hooks import popover
 from bayne.rofi import Rofi, RofiScript
 from bayne.widgets.outlook_checker import OutlookChecker
@@ -36,6 +36,7 @@ popover.init(restack=[
     'jetbrains-idea',
 ])
 systemd_logging.init()
+disable_screensaver.init()
 
 @hook.subscribe.startup_once
 def startup():
@@ -48,12 +49,6 @@ def startup():
     subprocess.Popen(["gtk-launch", "opensnitch_ui"])
     subprocess.run(["/usr/bin/systemctl", "--user", "start", "spice-vdagent"])
     subprocess.run(["/home/bpayne/.screenlayout/default.sh"])
-
-    ## disabling screensaver due to issues with screen not turning back on
-    # disable screensaver
-    subprocess.Popen(["xset", "s", "off"])
-    # disable energy star features (related to screensaver)
-    subprocess.Popen(["xset", "-dpms"])
 
 mod: str = "mod4"
 
