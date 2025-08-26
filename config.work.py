@@ -38,6 +38,9 @@ popover.init(restack=[
 systemd_logging.init()
 disable_screensaver.init()
 
+BORDER_FOCUS="#CC1111"
+BORDER_NORMAL="#440000"
+
 @hook.subscribe.startup_once
 def startup():
     subprocess.Popen(["/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1"])
@@ -109,9 +112,30 @@ screens = [
                 widget.Clock(format="%a %b %d %I:%M:%S %p"),
                 OutlookChecker(),
                 widget.Spacer(),
+                widget.TextBox(fmt="🌐",),
+                widget.NetGraph(
+                    type='line',
+                    margin_x=0,
+                    margin_y=0,
+                    border_width=0,
+                ),
+                widget.TextBox(fmt="⚙️",),
+                widget.CPUGraph(
+                    type='line',
+                    margin_x=0,
+                    margin_y=0,
+                    border_width=0,
+                ),
+                widget.TextBox(fmt="🔲",),
+                widget.MemoryGraph(
+                    type='line',
+                    margin_x=0,
+                    margin_y=0,
+                    border_width=0,
+                ),
                 widget.Systray(),
             ],
-            size=24,
+            size=20,
             background="#591a7d",
         ),
     ),
