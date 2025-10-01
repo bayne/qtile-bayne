@@ -49,6 +49,7 @@ def startup_once():
 
     subprocess.Popen(["1password", "--silent"])
 
+MBP_GROUP = "MBP"
 W1_GROUP = "W1"
 W2_GROUP = "W2"
 
@@ -59,7 +60,7 @@ logger = log_utils.logger
 @hook.subscribe.client_name_updated
 async def new_work_viewer(client):
     if "DeckLink Quad HDMI Recorder (1)" in client.name:
-        client.togroup(W2_GROUP)
+        client.togroup(MBP_GROUP)
     if "remote-viewer" in client.get_wm_class():
         if "work (1)" in client.name:
             client.togroup(W1_GROUP)
@@ -88,17 +89,19 @@ keys = get_default_keys(mod, rofi)
 groups = [Group(name=i, screen_affinity=0) for i in "123456789"]
 groups.append(Group(name=W1_GROUP, screen_affinity=0))
 groups.append(Group(name=W2_GROUP, screen_affinity=0))
+groups.append(Group(name=MBP_GROUP, screen_affinity=0))
 keys.extend(get_default_switch_group_keys(mod, 9))
 keys.extend([
+    Key([], 'XF86Search',
+        lazy.group[MBP_GROUP].toscreen(),
+        lazy.group[MBP_GROUP].focus_by_name('DeckLink Quad HDMI Recorder (1)'),
+        desc="focus on mbp"
+        ),
     Key(['mod1', "control"], "9", lazy.group[W1_GROUP].toscreen(), desc="W1"),
     Key(['mod1', "control"], "0",
         lazy.group[W2_GROUP].toscreen(),
         lazy.group[W2_GROUP].focus_by_name('work (2)'),
         desc="W2",
-    ),
-    Key([], 'XF86Search',
-        lazy.group[W2_GROUP].focus_by_name('DeckLink Quad HDMI Recorder (1)'),
-        desc="focus on mbp"
     ),
     Key([mod, 'control'], 'l',
         lazy.spawn('lock', shell=True),
